@@ -486,12 +486,15 @@ function TrackerApp({ session }) {
   return (
     <div className="wrap">
       <div className="field-lines">
-        <input
-          className="match-title-input"
-          value={currentMatch?.title || ''}
-          onChange={(e) => renameMatch(e.target.value)}
-          spellCheck={false}
-        />
+        <div className="header-row">
+          <img src="/lasswade-rfc-logo.png" alt="Lasswade R.F.C. crest" className="club-logo" />
+          <input
+            className="match-title-input"
+            value={currentMatch?.title || ''}
+            onChange={(e) => renameMatch(e.target.value)}
+            spellCheck={false}
+          />
+        </div>
         <div className="sub">Tag stats as you watch. Pick a player, then tap what they did — everything saves to your account.</div>
         <div className="clock-row">
           <label>Video time</label>

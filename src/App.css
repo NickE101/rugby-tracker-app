@@ -31,6 +31,9 @@ body{
   font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.7rem; padding:2px 0 4px; width:100%; outline:none;
 }
 .match-title-input:focus{ border-bottom-color:var(--red); }
+.header-row{ display:flex; align-items:center; gap:14px; }
+.header-row .match-title-input{ flex:1; }
+.club-logo{ width:52px; height:52px; object-fit:contain; flex-shrink:0; }
 .sub{ color:var(--paper-dim); font-size:0.92rem; margin-top:6px; }
 .clock-row{ display:flex; align-items:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .clock-row label{ font-size:0.85rem; color:var(--paper-dim); }
