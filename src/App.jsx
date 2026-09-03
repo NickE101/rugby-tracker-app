@@ -17,8 +17,11 @@ import {
 function AuthGate({ children }) {
   const [session, setSession] = useState(undefined); // undefined = loading
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState('signin'); // 'signin' | 'signup'
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -31,41 +34,62 @@ function AuthGate({ children }) {
   }
 
   if (!session) {
+    async function handleSubmit(e) {
+      e.preventDefault();
+      setError('');
+      setInfo('');
+      setBusy(true);
+      if (mode === 'signin') {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) setError(error.message);
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) setError(error.message);
+        else setInfo('Account created — check your inbox to confirm your email, then sign in below.');
+      }
+      setBusy(false);
+    }
+
     return (
       <div className="wrap">
         <div className="field-lines">
           <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: '1.5rem', margin: '0 0 6px' }}>
             Match Stat Tracker
           </h1>
-          <p className="sub">Sign in with a magic link to load your matches.</p>
-          {!sent ? (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setError('');
-                const { error } = await supabase.auth.signInWithOtp({ email });
-                if (error) setError(error.message);
-                else setSent(true);
-              }}
-              style={{ display: 'flex', gap: 8, marginTop: 14, flexWrap: 'wrap' }}
-            >
-              <input
-                type="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="clock"
-                style={{ width: 220, textAlign: 'left' }}
-              />
-              <button className="btn-primary" type="submit">Send magic link</button>
-            </form>
-          ) : (
-            <p className="sub" style={{ marginTop: 14 }}>
-              Check your inbox for a sign-in link, then come back to this tab.
-            </p>
-          )}
+          <p className="sub">{mode === 'signin' ? 'Sign in to load your matches.' : 'Create an account to get started.'}</p>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14, maxWidth: 280 }}>
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="clock"
+              style={{ width: '100%', textAlign: 'left' }}
+            />
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="clock"
+              style={{ width: '100%', textAlign: 'left' }}
+            />
+            <button className="btn-primary" type="submit" disabled={busy}>
+              {busy ? 'Please wait…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+            </button>
+          </form>
+          <button
+            className="btn-ghost small"
+            style={{ marginTop: 10 }}
+            onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); setInfo(''); }}
+          >
+            {mode === 'signin' ? "Need an account? Sign up" : 'Already have an account? Sign in'}
+          </button>
           {error && <p className="sub" style={{ color: 'var(--red)' }}>{error}</p>}
+          {info && <p className="sub" style={{ color: 'var(--paper)' }}>{info}</p>}
         </div>
       </div>
     );
