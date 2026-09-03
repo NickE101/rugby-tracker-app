@@ -43,10 +43,7 @@ function AuthGate({ children }) {
               onSubmit={async (e) => {
                 e.preventDefault();
                 setError('');
-               const { error } = await supabase.auth.signInWithOtp({
-  email,
-  options: { emailRedirectTo: window.location.origin },
-});
+                const { error } = await supabase.auth.signInWithOtp({ email });
                 if (error) setError(error.message);
                 else setSent(true);
               }}
@@ -150,7 +147,7 @@ function TrackerApp({ session }) {
   const [events, setEvents] = useState([]); // [{id, player_id, stat, stat_label, clock}]
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [clock, setClock] = useState('');
-  const [tab, setTab] = useState('totals');
+  const [tab, setTab] = useState('main');
   const [newName, setNewName] = useState('');
   const [newJersey, setNewJersey] = useState('');
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -571,40 +568,40 @@ function TrackerApp({ session }) {
 
       <div className="panel">
         <div className="tabs">
-          {['totals', 'dashboard', 'metrics', 'timeline', 'log'].map((t) => (
+          {['main', 'log'].map((t) => (
             <button key={t} className={'tab-btn' + (tab === t ? ' active' : '')} onClick={() => setTab(t)}>
-              {t === 'log' ? 'Event log' : t[0].toUpperCase() + t.slice(1)}
+              {t === 'log' ? 'Event log' : 'Main'}
             </button>
           ))}
         </div>
 
-        {tab === 'totals' && (
-          <div className="table-scroll">
-            <table className="totals">
-              <thead>
-                <tr><th style={{ textAlign: 'left' }}>Player</th>{STAT_DEFS.map((s) => <th key={s.key}>{s.label}</th>)}</tr>
-              </thead>
-              <tbody>
-                {players.length === 0 && <tr><td className="empty" style={{ textAlign: 'left' }}>Add players to see totals.</td></tr>}
-                {players.map((p) => (
-                  <tr key={p.id}>
-                    <td className="name">{p.name}{p.jersey && <span style={{ color: 'var(--paper-dim)', fontWeight: 400 }}> #{p.jersey}</span>}</td>
-                    {STAT_DEFS.map((s) => <td key={s.key}>{countFor(p.id, s.key)}</td>)}
-                  </tr>
-                ))}
-                {players.length > 0 && (
-                  <tr className="team-row">
-                    <td className="name">Team total</td>
-                    {STAT_DEFS.map((s) => <td key={s.key}>{teamCount(s.key)}</td>)}
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {tab === 'main' && (
+          <div className="main-tab">
+            <h3 className="section-heading">Totals</h3>
+            <div className="table-scroll">
+              <table className="totals">
+                <thead>
+                  <tr><th style={{ textAlign: 'left' }}>Player</th>{STAT_DEFS.map((s) => <th key={s.key}>{s.label}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {players.length === 0 && <tr><td className="empty" style={{ textAlign: 'left' }}>Add players to see totals.</td></tr>}
+                  {players.map((p) => (
+                    <tr key={p.id}>
+                      <td className="name">{p.name}{p.jersey && <span style={{ color: 'var(--paper-dim)', fontWeight: 400 }}> #{p.jersey}</span>}</td>
+                      {STAT_DEFS.map((s) => <td key={s.key}>{countFor(p.id, s.key)}</td>)}
+                    </tr>
+                  ))}
+                  {players.length > 0 && (
+                    <tr className="team-row">
+                      <td className="name">Team total</td>
+                      {STAT_DEFS.map((s) => <td key={s.key}>{teamCount(s.key)}</td>)}
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
-        {tab === 'dashboard' && (
-          <div>
+            <h3 className="section-heading">Dashboard</h3>
             {players.length === 0 ? (
               <p className="timeline-note">Add players and log some events to see the charts.</p>
             ) : (
@@ -635,23 +632,19 @@ function TrackerApp({ session }) {
                 })}
               </div>
             )}
-          </div>
-        )}
 
-        {tab === 'metrics' && (
-          <div className="metrics-grid">
-            {metrics.map((c) => (
-              <div className="metric-card" key={c.label}>
-                <div className="big">{c.value === null ? '–' : c.isRaw ? (c.value > 0 ? '+' : '') + c.value : c.value + '%'}</div>
-                <div className="lbl">{c.label}</div>
-                <div className="sub">{c.sub}</div>
-              </div>
-            ))}
-          </div>
-        )}
+            <h3 className="section-heading">Metrics</h3>
+            <div className="metrics-grid">
+              {metrics.map((c) => (
+                <div className="metric-card" key={c.label}>
+                  <div className="big">{c.value === null ? '–' : c.isRaw ? (c.value > 0 ? '+' : '') + c.value : c.value + '%'}</div>
+                  <div className="lbl">{c.label}</div>
+                  <div className="sub">{c.sub}</div>
+                </div>
+              ))}
+            </div>
 
-        {tab === 'timeline' && (
-          <div>
+            <h3 className="section-heading">Timeline</h3>
             {events.length === 0 ? (
               <p className="timeline-note">Log some events with a video time to see the timeline.</p>
             ) : (

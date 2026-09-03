@@ -155,6 +155,12 @@ table.totals tr.team-row td{ font-weight:700; border-top:1px solid var(--line-st
 .tab-btn{ background:var(--surface-2); border:1px solid var(--line-strong); color:var(--paper-dim); padding:7px 14px; border-radius:var(--radius-pill); font-size:0.85rem; }
 .tab-btn.active{ background:var(--red); color:var(--paper); font-weight:600; border-color:var(--red); }
 
+.section-heading{
+  font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:0.95rem; color:var(--paper);
+  margin:26px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line-strong);
+}
+.section-heading:first-child{ margin-top:0; }
+
 .footer-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
 .footer-row .right{ display:flex; gap:8px; }
 
